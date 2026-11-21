@@ -3,6 +3,7 @@
 
   const DATA_KEY = "daily-fall-risk-demo-v1";
   const NURSE_KEY = "daily-fall-risk-demo-nurse";
+  const MAX_PATIENTS = 50;
   const CARE_STEPS = [
     "Bed in lowest position",
     "Call bell within reach",
@@ -17,7 +18,7 @@
     { id: "p4", ward: "Demo Ward", bed: "D04", name: "Mali Demo", hn: "DEMO-0004" },
     { id: "p5", ward: "Demo Ward", bed: "D05", name: "Kiet Mock", hn: "DEMO-0005" }
   ];
-  const WARD_BEDS = Array.from({ length: 12 }, (_, index) => `D${String(index + 1).padStart(2, "0")}`);
+  const WARD_BEDS = Array.from({ length: MAX_PATIENTS }, (_, index) => `D${String(index + 1).padStart(2, "0")}`);
 
   const today = dateKey(new Date());
   const app = document;
@@ -287,7 +288,7 @@
       bedSelect.replaceChildren();
       const prompt = app.createElement("option");
       prompt.value = "";
-      prompt.textContent = "Choose an empty bed";
+      prompt.textContent = data.patients.length >= MAX_PATIENTS ? `Demo roster limit reached (${MAX_PATIENTS} patients)` : "Choose an empty bed";
       bedSelect.append(prompt);
       WARD_BEDS.filter((bed) => !occupied.has(bed)).forEach((bed) => {
         const option = app.createElement("option");
@@ -296,7 +297,9 @@
         bedSelect.append(option);
       });
       if (previousBed && !occupied.has(previousBed)) bedSelect.value = previousBed;
-      if (!bedSelect.options.length || bedSelect.options.length === 1) {
+      if (data.patients.length >= MAX_PATIENTS) {
+        bedSelect.disabled = true;
+      } else if (!bedSelect.options.length || bedSelect.options.length === 1) {
         prompt.textContent = "No empty beds available";
         bedSelect.disabled = true;
       } else {
@@ -314,6 +317,12 @@
       const hn = app.getElementById("new-patient-hn").value.trim();
       const bed = bedSelect.value;
       const current = loadData();
+      if (current.patients.length >= MAX_PATIENTS) {
+        addMessage.textContent = `The demo ward can hold up to ${MAX_PATIENTS} patients.`;
+        addMessage.className = "form-message message-error";
+        updateEmptyBeds(current);
+        return;
+      }
       if (!name || !hn || !bed || current.patients.some((patient) => patient.bed === bed)) {
         addMessage.textContent = "Enter a made-up name and HN, then choose a currently empty bed.";
         addMessage.className = "form-message message-error";
