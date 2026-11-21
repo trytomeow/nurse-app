@@ -33,6 +33,17 @@
       <article class="summary-card"><span class="summary-caption">Last updated</span><strong id="last-updated" class="updated-value">—</strong><span class="summary-foot">This browser</span></article>
     </section>
 
+    <section class="panel add-patient-panel" aria-labelledby="add-patient-title">
+      <div class="add-patient-heading"><div><p class="eyebrow">Ward roster · Demo only</p><h2 id="add-patient-title">Add a patient to an empty bed</h2><p>Use made-up patient details. The patient is saved in this browser and starts as not assessed yet.</p></div></div>
+      <form id="add-patient-form" class="add-patient-form">
+        <label><span>Patient name</span><input id="new-patient-name" name="name" autocomplete="off" required maxlength="80" placeholder="e.g. Dara Demo"></label>
+        <label><span>Hospital number</span><input id="new-patient-hn" name="hn" autocomplete="off" required maxlength="32" placeholder="e.g. DEMO-0006"></label>
+        <label><span>Empty bed</span><select id="new-patient-bed" name="bed" required><option value="">Choose an empty bed</option></select></label>
+        <button class="button button-primary add-patient-button" type="submit">Add to ward board <span aria-hidden="true">→</span></button>
+      </form>
+      <p id="add-patient-message" class="form-message" aria-live="polite"></p>
+    </section>
+
     <section class="panel board-panel">
       <div class="board-panel-heading"><div><h2>Patient status</h2><p>Latest assessment for today · Earlier submissions are kept</p></div><a class="button button-secondary" href="index.html">+ New assessment</a></div>
       <div class="table-wrap">

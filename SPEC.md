@@ -78,6 +78,7 @@ Keep the care-step definitions in one centralized, easily changeable place. Do n
 - Keep the board current after an assessment is submitted or an offline assessment syncs.
 - Ward, bed, patient, and date context must be visible so the board is not mistaken for another ward or day.
 - Show which nurse submitted the latest assessment, consistent with the form's nurse attribution.
+- For the demo, let the head nurse add a made-up patient to an empty ward bed by entering a name and HN. Keep the patient in this browser only, show **Not assessed yet**, and include the patient in the nurse's patient selector.
 
 ## Offline behavior
 

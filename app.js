@@ -17,6 +17,7 @@
     { id: "p4", ward: "Demo Ward", bed: "D04", name: "Mali Demo", hn: "DEMO-0004" },
     { id: "p5", ward: "Demo Ward", bed: "D05", name: "Kiet Mock", hn: "DEMO-0005" }
   ];
+  const WARD_BEDS = Array.from({ length: 12 }, (_, index) => `D${String(index + 1).padStart(2, "0")}`);
 
   const today = dateKey(new Date());
   const app = document;
@@ -198,6 +199,25 @@
       });
     }
 
+    function updatePatientRoster() {
+      const selectedId = patientSelect.value;
+      const currentData = loadData();
+      patientSelect.replaceChildren();
+      const prompt = app.createElement("option");
+      prompt.value = "";
+      prompt.textContent = "Select a patient";
+      patientSelect.append(prompt);
+      currentData.patients.forEach((patient) => {
+        const option = app.createElement("option");
+        option.value = patient.id;
+        option.textContent = `${patient.bed} · ${patient.name}`;
+        patientSelect.append(option);
+      });
+      patientSelect.value = selectedId;
+      data.patients = currentData.patients;
+      if (selectedId) updatePatient();
+    }
+
     patientSelect.addEventListener("change", updatePatient);
 
     form.querySelectorAll('input[name="risk"]').forEach((input) => {
@@ -247,14 +267,83 @@
         app.getElementById("risk-label").textContent = "None";
       }
     });
+
+    window.addEventListener("storage", (event) => {
+      if (event.key === DATA_KEY) updatePatientRoster();
+    });
   }
 
   function initBoardPage() {
     const dateHeading = app.getElementById("board-date");
     dateHeading.textContent = displayDate(today);
+    const addForm = app.getElementById("add-patient-form");
+    const bedSelect = app.getElementById("new-patient-bed");
+    const addMessage = app.getElementById("add-patient-message");
+
+    function updateEmptyBeds(data) {
+      const previousBed = bedSelect.value;
+      const occupied = new Set(data.patients.map((patient) => patient.bed));
+      bedSelect.replaceChildren();
+      const prompt = app.createElement("option");
+      prompt.value = "";
+      prompt.textContent = "Choose an empty bed";
+      bedSelect.append(prompt);
+      WARD_BEDS.filter((bed) => !occupied.has(bed)).forEach((bed) => {
+        const option = app.createElement("option");
+        option.value = bed;
+        option.textContent = bed;
+        bedSelect.append(option);
+      });
+      if (previousBed && !occupied.has(previousBed)) bedSelect.value = previousBed;
+      if (!bedSelect.options.length || bedSelect.options.length === 1) {
+        prompt.textContent = "No empty beds available";
+        bedSelect.disabled = true;
+      } else {
+        bedSelect.disabled = false;
+      }
+      addForm.querySelector("button[type='submit']").disabled = bedSelect.disabled;
+    }
+
+    updateEmptyBeds(loadData());
+
+    addForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      addMessage.textContent = "";
+      const name = app.getElementById("new-patient-name").value.trim();
+      const hn = app.getElementById("new-patient-hn").value.trim();
+      const bed = bedSelect.value;
+      const current = loadData();
+      if (!name || !hn || !bed || current.patients.some((patient) => patient.bed === bed)) {
+        addMessage.textContent = "Enter a made-up name and HN, then choose a currently empty bed.";
+        addMessage.className = "form-message message-error";
+        updateEmptyBeds(current);
+        return;
+      }
+
+      const patient = {
+        id: `local-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        ward: "Demo Ward",
+        bed,
+        name,
+        hn
+      };
+      current.patients.push(patient);
+      if (!saveData(current)) {
+        addMessage.textContent = "This browser could not save the patient. Check available device storage and try again.";
+        addMessage.className = "form-message message-error";
+        return;
+      }
+
+      addForm.reset();
+      renderBoard();
+      updateEmptyBeds(current);
+      addMessage.textContent = `${patient.name} added at ${patient.bed} as Not assessed yet. The patient is now on the nurse assessment list.`;
+      addMessage.className = "form-message message-success";
+    });
 
     function renderBoard() {
       const data = loadData();
+      updateEmptyBeds(data);
       const rows = app.getElementById("board-rows");
       const todayEntries = getTodayAssessments(data);
       rows.replaceChildren();
@@ -276,7 +365,7 @@
         hn.className = "hn-cell";
         hn.textContent = patient.hn;
         const risk = app.createElement("td");
-        risk.append(latest ? makeRiskBadge(latest.level) : makeRiskBadge("pending", "Not assessed"));
+        risk.append(latest ? makeRiskBadge(latest.level) : makeRiskBadge("pending", "Not assessed yet"));
         const assessed = app.createElement("td");
         assessed.className = "time-cell";
         assessed.textContent = latest ? formatTime(latest.timestamp) : "—";
