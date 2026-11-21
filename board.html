@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f6f8">
+  <title>Ward Board · Daily Fall Risk</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="calc.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="page-shell board-shell">
+    <header class="topbar">
+      <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">+</span><span>Daily Fall Risk</span></a>
+      <nav class="top-links" aria-label="Main navigation">
+        <a class="nav-link" href="index.html">Assessment</a>
+        <a class="nav-link active" href="board.html" aria-current="page">Ward board</a>
+      </nav>
+    </header>
+
+    <div class="demo-banner" role="note"><span class="demo-dot" aria-hidden="true"></span><span><strong>Demo data only.</strong> Board updates from assessments saved in this browser. No hospital system is connected.</span><a href="tests.html">Risk examples</a></div>
+
+    <section class="page-heading board-heading">
+      <div><p class="eyebrow">Ward overview · Daily round</p><h1>Demo Ward</h1><p class="lede">Today's fall-risk assessments across the ward.</p></div>
+      <div class="board-date"><span class="date-icon" aria-hidden="true">▦</span><span><strong id="board-date"></strong><small>Assessment date</small></span></div>
+    </section>
+
+    <section class="summary-grid" aria-label="Ward assessment summary">
+      <article class="summary-card"><span class="summary-caption">Patients on ward</span><strong id="count-total">0</strong><span class="summary-foot">Demo roster</span></article>
+      <article class="summary-card"><span class="summary-caption">Assessed today</span><strong id="count-assessed">0</strong><span class="summary-foot"><span id="count-pending">0</span> still to assess</span></article>
+      <article class="summary-card summary-high"><span class="summary-caption">High risk</span><strong id="count-high">0</strong><span class="summary-foot">Latest assessment</span></article>
+      <article class="summary-card"><span class="summary-caption">Last updated</span><strong id="last-updated" class="updated-value">—</strong><span class="summary-foot">This browser</span></article>
+    </section>
+
+    <section class="panel board-panel">
+      <div class="board-panel-heading"><div><h2>Patient status</h2><p>Latest assessment for today · Earlier submissions are kept</p></div><a class="button button-secondary" href="index.html">+ New assessment</a></div>
+      <div class="table-wrap">
+        <table class="data-table board-table">
+          <thead><tr><th scope="col">Bed</th><th scope="col">Patient</th><th scope="col">Hospital number</th><th scope="col">Risk today</th><th scope="col">Assessed</th><th scope="col">Nurse</th><th scope="col">History</th></tr></thead>
+          <tbody id="board-rows"></tbody>
+        </table>
+      </div>
+      <div class="board-legend"><span><i class="legend-dot assessed-dot"></i>Assessed</span><span><i class="legend-dot pending-dot"></i>Not assessed</span><span class="legend-note">“None” means assessed with no factors selected.</span></div>
+    </section>
+
+    <section class="history-panel panel">
+      <div class="history-section-heading"><div><p class="eyebrow">Assessment history</p><h2>Latest entries</h2></div><span class="history-subtitle">Each submission is retained</span></div>
+      <div id="recent-history" class="recent-history"></div>
+    </section>
+
+    <footer class="site-footer"><span>Daily Fall Risk · Fictional demo</span><span>Local data only</span></footer>
+  </main>
+</body>
+</html>

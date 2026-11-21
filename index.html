@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f6f8">
+  <title>Daily Fall-Risk Assessment</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="calc.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="page-shell">
+    <header class="topbar">
+      <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">+</span><span>Daily Fall Risk</span></a>
+      <nav class="top-links" aria-label="Main navigation">
+        <a class="nav-link active" href="index.html" aria-current="page">Assessment</a>
+        <a class="nav-link" href="board.html">Ward board</a>
+      </nav>
+    </header>
+
+    <div class="demo-banner" role="note"><span class="demo-dot" aria-hidden="true"></span><span><strong>Demo data only.</strong> This page works offline in this browser. It is not connected to a hospital system; entries stay on this device.</span><a href="tests.html">Risk examples</a></div>
+
+    <section id="login-panel" class="login-panel panel" hidden>
+      <div class="login-icon" aria-hidden="true">✓</div>
+      <p class="eyebrow">Ward nurse</p>
+      <h1>Sign in for this demo</h1>
+      <p class="lede">Choose a fictional demo nurse. This local sign-in is for the prototype only and does not verify identity.</p>
+      <form id="login-form" class="login-form">
+        <label class="field-label" for="nurse-name">Nurse name</label>
+        <select id="nurse-name" required>
+          <option value="Nurse Mali Demo">Nurse Mali Demo</option>
+          <option value="Nurse Arun Sample">Nurse Arun Sample</option>
+          <option value="Nurse Ploy Fiction">Nurse Ploy Fiction</option>
+        </select>
+        <button class="button button-primary button-wide" type="submit">Continue to assessment <span aria-hidden="true">→</span></button>
+      </form>
+    </section>
+
+    <div id="assessment-view" hidden>
+      <section class="page-heading assessment-heading">
+        <div>
+          <p class="eyebrow">Demo Ward · Daily round</p>
+          <h1>Fall-risk assessment</h1>
+          <p class="lede">Complete one patient's assessment at a time.</p>
+        </div>
+        <div class="signed-in"><span class="online-indicator" aria-hidden="true"></span><span id="signed-in-name"></span><button id="sign-out" class="text-button" type="button">Sign out</button></div>
+      </section>
+
+      <form id="assessment-form" novalidate>
+        <section class="panel patient-panel">
+          <div class="section-title-row"><div><p class="eyebrow">01 · Patient</p><h2>Confirm patient</h2></div><span class="step-count">One patient per form</span></div>
+          <label class="field-label" for="patient-select">Choose from today's ward list</label>
+          <select id="patient-select" required>
+            <option value="">Select a patient</option>
+          </select>
+          <div id="patient-details" class="patient-details" hidden>
+            <div class="patient-avatar" aria-hidden="true" id="patient-initials"></div>
+            <div class="patient-main"><strong id="patient-full-name"></strong><span id="patient-bed"></span></div>
+            <div class="patient-hn"><span>Hospital number</span><strong id="patient-hn"></strong></div>
+            <div class="patient-ward"><span>Ward · Date</span><strong>Demo Ward · <span id="assessment-date"></span></strong></div>
+          </div>
+          <p id="patient-error" class="field-error" hidden>Select a patient before continuing.</p>
+          <div id="history-wrap" class="history-wrap" hidden>
+            <div class="history-title"><span>Today's saved assessments</span><span id="history-count"></span></div>
+            <ul id="history-list" class="history-list"></ul>
+          </div>
+        </section>
+
+        <section class="panel factor-panel">
+          <div class="section-title-row"><div><p class="eyebrow">02 · Risk factors</p><h2>Tick all that apply</h2></div><span class="optional-tag">Select all that apply</span></div>
+          <fieldset class="factor-list">
+            <legend class="visually-hidden">Fall-risk factors</legend>
+            <label class="check-row"><input type="checkbox" name="risk" value="R1"><span class="check-box" aria-hidden="true"></span><span class="factor-code">R1</span><span class="factor-text">Over 65 and has fallen before</span></label>
+            <label class="check-row"><input type="checkbox" name="risk" value="R2"><span class="check-box" aria-hidden="true"></span><span class="factor-code">R2</span><span class="factor-text">Confused, or awareness has changed</span></label>
+            <label class="check-row"><input type="checkbox" name="risk" value="R3"><span class="check-box" aria-hidden="true"></span><span class="factor-code">R3</span><span class="factor-text">Problem with balance or walking</span></label>
+            <label class="check-row"><input type="checkbox" name="risk" value="R4"><span class="check-box" aria-hidden="true"></span><span class="factor-code">R4</span><span class="factor-text">Poor eyesight</span></label>
+            <label class="check-row"><input type="checkbox" name="risk" value="R5"><span class="check-box" aria-hidden="true"></span><span class="factor-code">R5</span><span class="factor-text">Medicines that raise fall risk</span></label>
+            <label class="check-row"><input type="checkbox" name="risk" value="R6"><span class="check-box" aria-hidden="true"></span><span class="factor-code">R6</span><span class="factor-text">Urgent or frequent toilet needs</span></label>
+            <label class="check-row"><input type="checkbox" name="risk" value="R7"><span class="check-box" aria-hidden="true"></span><span class="factor-code">R7</span><span class="factor-text">Lines or devices attached</span></label>
+          </fieldset>
+          <div class="risk-preview" aria-live="polite">
+            <span class="preview-label">Calculated risk level</span>
+            <span id="risk-badge" class="risk-badge none"><span class="risk-dot"></span><span id="risk-label">None</span></span>
+            <span class="preview-rule">Highest applicable factor determines the level</span>
+          </div>
+        </section>
+
+        <section class="panel care-panel">
+          <div class="section-title-row"><div><p class="eyebrow">03 · Care steps</p><h2>What has been done?</h2></div></div>
+          <p class="placeholder-warning"><span aria-hidden="true">ⓘ</span> Example, to be confirmed by the nurses</p>
+          <fieldset class="care-list">
+            <legend class="visually-hidden">Care steps completed</legend>
+            <div id="care-options"></div>
+          </fieldset>
+        </section>
+
+        <div class="submit-row">
+          <p class="save-note"><span class="save-icon" aria-hidden="true">✓</span> Saved on this device · works offline</p>
+          <button class="button button-primary submit-button" type="submit">Save assessment <span aria-hidden="true">→</span></button>
+        </div>
+        <p id="form-message" class="form-message" aria-live="polite"></p>
+      </form>
+    </div>
+
+    <footer class="site-footer"><span>Daily Fall Risk · Fictional demo</span><span>Local data only</span></footer>
+  </main>
+</body>
+</html>
