@@ -37,7 +37,7 @@
       <div class="add-patient-heading"><div><p class="eyebrow">Ward roster · Demo only</p><h2 id="add-patient-title">Add a patient to an empty bed</h2><p>Use made-up patient details. Add patients up to 50 total; each starts as not assessed yet and is saved in this browser.</p></div></div>
       <form id="add-patient-form" class="add-patient-form">
         <label><span>Patient name</span><input id="new-patient-name" name="name" autocomplete="off" required maxlength="80" placeholder="e.g. Dara Demo"></label>
-        <label><span>Hospital number</span><input id="new-patient-hn" name="hn" autocomplete="off" required maxlength="32" placeholder="e.g. DEMO-0006"></label>
+        <label><span>Hospital number (HN + 6 digits)</span><input id="new-patient-hn" name="hn" autocomplete="off" required maxlength="8" pattern="HN[0-9]{6}" title="Enter HN followed by exactly six digits, for example HN000021." placeholder="e.g. HN000021"></label>
         <label><span>Empty bed</span><select id="new-patient-bed" name="bed" required><option value="">Choose an empty bed</option></select></label>
         <button class="button button-primary add-patient-button" type="submit">Add to ward board <span aria-hidden="true">→</span></button>
       </form>

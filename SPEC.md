@@ -93,13 +93,15 @@ Any example records must be synthetic and visibly labeled as demo data. For exam
 
 | Ward | Bed | Date | Patient | HN | Example assessment |
 |---|---|---|---|---|---|
-| Demo Ward | D01 | Demo date | Mina Example | DEMO-0001 | R2 selected → High |
-| Demo Ward | D02 | Demo date | Arun Sample | DEMO-0002 | No factors selected → None |
-| Demo Ward | D03 | Demo date | Niran Fiction | DEMO-0003 | Not assessed |
+| Demo Ward | D01 | Demo date | Mina Example | HN000001 | R2 selected → High |
+| Demo Ward | D02 | Demo date | Arun Sample | HN000002 | No factors selected → None |
+| Demo Ward | D03 | Demo date | Niran Fiction | HN000003 | Not assessed |
 
 These names and identifiers are fictional placeholders, not patient records.
 
-The demo ward starts with 20 fabricated patients. The 15 additional entries use numbered “Demo Patient” names and DEMO HNs. Their varied risk-factor combinations are randomized once when seeded, calculated by the rule above, and stored in the browser for demonstration.
+The demo ward starts with 20 fabricated patients. The 15 additional entries use numbered “Demo Patient” names and fabricated hospital numbers. Their varied risk-factor combinations are randomized once when seeded, calculated by the rule above, and stored in the browser for demonstration.
+
+Hospital numbers in the demo use the format `HN` followed by exactly six digits (for example, `HN000001`). New patients added from the ward board must use this format.
 
 ## Questions for the nurses
 

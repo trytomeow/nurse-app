@@ -2,7 +2,7 @@
   "use strict";
 
   const DATA_KEY = "daily-fall-risk-demo-v1";
-  const NURSE_KEY = "daily-fall-risk-demo-nurse";
+  const NURSE_KEY = "daily-fall-risk-demo-nurse-account-v2";
   const MAX_PATIENTS = 50;
   const CARE_STEPS = [
     "Bed in lowest position",
@@ -12,17 +12,22 @@
     "Patient and family told about fall risk"
   ];
   const ROSTER = [
-    { id: "p1", ward: "Demo Ward", bed: "D01", name: "Mina Example", hn: "DEMO-0001" },
-    { id: "p2", ward: "Demo Ward", bed: "D02", name: "Arun Sample", hn: "DEMO-0002" },
-    { id: "p3", ward: "Demo Ward", bed: "D03", name: "Niran Fiction", hn: "DEMO-0003" },
-    { id: "p4", ward: "Demo Ward", bed: "D04", name: "Mali Demo", hn: "DEMO-0004" },
-    { id: "p5", ward: "Demo Ward", bed: "D05", name: "Kiet Mock", hn: "DEMO-0005" },
+    { id: "p1", ward: "Demo Ward", bed: "D01", name: "Mina Example", hn: "HN000001" },
+    { id: "p2", ward: "Demo Ward", bed: "D02", name: "Arun Sample", hn: "HN000002" },
+    { id: "p3", ward: "Demo Ward", bed: "D03", name: "Niran Fiction", hn: "HN000003" },
+    { id: "p4", ward: "Demo Ward", bed: "D04", name: "Mali Demo", hn: "HN000004" },
+    { id: "p5", ward: "Demo Ward", bed: "D05", name: "Kiet Mock", hn: "HN000005" },
     ...Array.from({ length: 15 }, (_, index) => {
       const number = index + 6;
       const suffix = String(number).padStart(2, "0");
-      return { id: `p${number}`, ward: "Demo Ward", bed: `D${suffix}`, name: `Demo Patient ${suffix}`, hn: `DEMO-${String(number).padStart(4, "0")}` };
+      return { id: `p${number}`, ward: "Demo Ward", bed: `D${suffix}`, name: `Demo Patient ${suffix}`, hn: `HN${String(number).padStart(6, "0")}` };
     })
   ];
+  const NURSE_ACCOUNTS = {
+    "mali.demo": "Nurse Mali Demo",
+    "arun.sample": "Nurse Arun Sample",
+    "ploy.fiction": "Nurse Ploy Fiction"
+  };
   const DEMO_RISK_PROFILES = [
     ["R1"], ["R2", "R5"], ["R3", "R7"], ["R1", "R6", "R7"],
     ["R4", "R7"], ["R5"], ["R6"], ["R4", "R6", "R7"], ["R5", "R7"],
@@ -94,8 +99,11 @@
         const demoIds = new Set(ROSTER.map((patient) => patient.id));
         const newDemoPatients = ROSTER.filter((patient) => !storedById.has(patient.id));
         const patients = [
-          ...ROSTER.map((patient) => storedById.get(patient.id) || patient),
-          ...saved.patients.filter((patient) => !demoIds.has(patient.id))
+          ...ROSTER.map((patient) => ({ ...(storedById.get(patient.id) || patient), hn: patient.hn })),
+          ...saved.patients.filter((patient) => !demoIds.has(patient.id)).map((patient) => {
+            const oldDemoHN = /^DEMO-(\d{4})$/i.exec(String(patient.hn || ""));
+            return oldDemoHN ? { ...patient, hn: `HN${oldDemoHN[1].padStart(6, "0")}` } : patient;
+          })
         ];
         const assessments = saved.assessments.concat(makeRandomizedDemoAssessments(newDemoPatients));
         if (newDemoPatients.length) saveData({ ...saved, patients, assessments });
@@ -176,7 +184,7 @@
     const assessmentView = app.getElementById("assessment-view");
     const data = loadData();
     const loginForm = app.getElementById("login-form");
-    const nurseSelect = app.getElementById("nurse-name");
+    const nurseSelect = app.getElementById("nurse-account");
     const patientSelect = app.getElementById("patient-select");
     const form = app.getElementById("assessment-form");
     const message = app.getElementById("form-message");
@@ -201,8 +209,10 @@
 
     loginForm.addEventListener("submit", (event) => {
       event.preventDefault();
-      localStorage.setItem(NURSE_KEY, nurseSelect.value);
-      showSession(nurseSelect.value);
+      const nurseName = NURSE_ACCOUNTS[nurseSelect.value];
+      if (!nurseName) return;
+      localStorage.setItem(NURSE_KEY, nurseName);
+      showSession(nurseName);
     });
 
     app.getElementById("sign-out").addEventListener("click", () => {
@@ -359,13 +369,19 @@
       event.preventDefault();
       addMessage.textContent = "";
       const name = app.getElementById("new-patient-name").value.trim();
-      const hn = app.getElementById("new-patient-hn").value.trim();
+      const hn = app.getElementById("new-patient-hn").value.trim().toUpperCase();
       const bed = bedSelect.value;
       const current = loadData();
       if (current.patients.length >= MAX_PATIENTS) {
         addMessage.textContent = `The demo ward can hold up to ${MAX_PATIENTS} patients.`;
         addMessage.className = "form-message message-error";
         updateEmptyBeds(current);
+        return;
+      }
+      if (!/^HN[0-9]{6}$/.test(hn)) {
+        addMessage.textContent = "Hospital number must be HN followed by exactly six digits, for example HN000021.";
+        addMessage.className = "form-message message-error";
+        app.getElementById("new-patient-hn").focus();
         return;
       }
       if (!name || !hn || !bed || current.patients.some((patient) => patient.bed === bed)) {
