@@ -24,8 +24,8 @@
     <section id="login-panel" class="login-panel panel" hidden>
       <div class="login-icon" aria-hidden="true">✓</div>
       <p class="eyebrow">Ward nurse</p>
-      <h1>Sign in for this demo</h1>
-      <p class="lede">Choose a fictional demo nurse. This local sign-in is for the prototype only and does not verify identity.</p>
+      <h1>Demo sign-in, not a real hospital account</h1>
+      <p class="lede">Choose a made-up nurse name from the list. No password is used in this local demo.</p>
       <form id="login-form" class="login-form">
         <label class="field-label" for="nurse-name">Nurse name</label>
         <select id="nurse-name" required>
@@ -59,6 +59,11 @@
             <div class="patient-main"><strong id="patient-full-name"></strong><span id="patient-bed"></span></div>
             <div class="patient-hn"><span>Hospital number</span><strong id="patient-hn"></strong></div>
             <div class="patient-ward"><span>Ward · Date</span><strong>Demo Ward · <span id="assessment-date"></span></strong></div>
+          </div>
+          <div class="nurse-attribution">
+            <label for="form-nurse-name">Nurse's name</label>
+            <input id="form-nurse-name" type="text" readonly aria-readonly="true">
+            <span>Filled from demo sign-in</span>
           </div>
           <p id="patient-error" class="field-error" hidden>Select a patient before continuing.</p>
           <div id="history-wrap" class="history-wrap" hidden>

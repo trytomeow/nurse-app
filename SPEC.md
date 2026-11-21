@@ -107,6 +107,7 @@ These names and identifiers are fictional placeholders, not patient records.
 4. **Daily completion rules:** What counts as “today” for a patient admitted or transferred during the day, and are there cases where an active patient should not be counted as awaiting assessment?
 5. **Corrections:** If a nurse submits an assessment against the wrong patient or with an incorrect tick, what correction or void workflow is clinically acceptable while preserving the original record and audit history?
 6. **Offline operation:** How should staff handle a shared phone, an expired sign-in, a device clock that is wrong, or two offline assessments that sync out of order? Which recorded time should determine the latest assessment?
+7. How should nurses log in with their hospital account?
 
 ## Open implementation decisions
 

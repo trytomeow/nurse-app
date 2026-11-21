@@ -148,6 +148,7 @@
       loginPanel.hidden = Boolean(nurse);
       assessmentView.hidden = !nurse;
       if (nurse) app.getElementById("signed-in-name").textContent = nurse;
+      app.getElementById("form-nurse-name").value = nurse || "";
     }
 
     showSession(localStorage.getItem(NURSE_KEY));
