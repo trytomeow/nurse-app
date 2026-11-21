@@ -16,8 +16,20 @@
     { id: "p2", ward: "Demo Ward", bed: "D02", name: "Arun Sample", hn: "DEMO-0002" },
     { id: "p3", ward: "Demo Ward", bed: "D03", name: "Niran Fiction", hn: "DEMO-0003" },
     { id: "p4", ward: "Demo Ward", bed: "D04", name: "Mali Demo", hn: "DEMO-0004" },
-    { id: "p5", ward: "Demo Ward", bed: "D05", name: "Kiet Mock", hn: "DEMO-0005" }
+    { id: "p5", ward: "Demo Ward", bed: "D05", name: "Kiet Mock", hn: "DEMO-0005" },
+    ...Array.from({ length: 15 }, (_, index) => {
+      const number = index + 6;
+      const suffix = String(number).padStart(2, "0");
+      return { id: `p${number}`, ward: "Demo Ward", bed: `D${suffix}`, name: `Demo Patient ${suffix}`, hn: `DEMO-${String(number).padStart(4, "0")}` };
+    })
   ];
+  const DEMO_RISK_PROFILES = [
+    ["R1"], ["R2", "R5"], ["R3", "R7"], ["R1", "R6", "R7"],
+    ["R4", "R7"], ["R5"], ["R6"], ["R4", "R6", "R7"], ["R5", "R7"],
+    ["R7"], ["R7"], ["R7"],
+    [], [], []
+  ];
+  const DEMO_NURSES = ["Nurse Mali Demo", "Nurse Arun Sample", "Nurse Ploy Fiction"];
   const WARD_BEDS = Array.from({ length: MAX_PATIENTS }, (_, index) => `D${String(index + 1).padStart(2, "0")}`);
 
   const today = dateKey(new Date());
@@ -40,6 +52,27 @@
     return date.toISOString();
   }
 
+  function makeRandomizedDemoAssessments(patients) {
+    const profiles = DEMO_RISK_PROFILES.slice();
+    for (let index = profiles.length - 1; index > 0; index -= 1) {
+      const swapIndex = Math.floor(Math.random() * (index + 1));
+      [profiles[index], profiles[swapIndex]] = [profiles[swapIndex], profiles[index]];
+    }
+    return patients.map((patient, index) => {
+      const factors = profiles[index % profiles.length];
+      return {
+        id: `demo-${patient.id}`,
+        patientId: patient.id,
+        date: today,
+        factors,
+        careSteps: [index % CARE_STEPS.length, (index + 2) % CARE_STEPS.length],
+        level: calculateRisk(factors),
+        nurse: DEMO_NURSES[index % DEMO_NURSES.length],
+        timestamp: earlierToday(120 - index * 3)
+      };
+    });
+  }
+
   function makeDemoData() {
     return {
       patients: ROSTER,
@@ -47,7 +80,8 @@
         { id: "demo-a1", patientId: "p1", date: today, factors: ["R2", "R5"], careSteps: [0, 1], level: "high", nurse: "Nurse Mali Demo", timestamp: earlierToday(76) },
         { id: "demo-a2", patientId: "p2", date: today, factors: [], careSteps: [1], level: "none", nurse: "Nurse Arun Sample", timestamp: earlierToday(64) },
         { id: "demo-a3", patientId: "p4", date: today, factors: ["R4", "R7"], careSteps: [0, 2], level: "moderate", nurse: "Nurse Ploy Fiction", timestamp: earlierToday(51) },
-        { id: "demo-a4", patientId: "p5", date: today, factors: ["R7"], careSteps: [1, 3], level: "low", nurse: "Nurse Mali Demo", timestamp: earlierToday(36) }
+        { id: "demo-a4", patientId: "p5", date: today, factors: ["R7"], careSteps: [1, 3], level: "low", nurse: "Nurse Mali Demo", timestamp: earlierToday(36) },
+        ...makeRandomizedDemoAssessments(ROSTER.slice(5))
       ]
     };
   }
@@ -55,7 +89,18 @@
   function loadData() {
     try {
       const saved = JSON.parse(localStorage.getItem(DATA_KEY));
-      if (saved && Array.isArray(saved.patients) && Array.isArray(saved.assessments)) return saved;
+      if (saved && Array.isArray(saved.patients) && Array.isArray(saved.assessments)) {
+        const storedById = new Map(saved.patients.map((patient) => [patient.id, patient]));
+        const demoIds = new Set(ROSTER.map((patient) => patient.id));
+        const newDemoPatients = ROSTER.filter((patient) => !storedById.has(patient.id));
+        const patients = [
+          ...ROSTER.map((patient) => storedById.get(patient.id) || patient),
+          ...saved.patients.filter((patient) => !demoIds.has(patient.id))
+        ];
+        const assessments = saved.assessments.concat(makeRandomizedDemoAssessments(newDemoPatients));
+        if (newDemoPatients.length) saveData({ ...saved, patients, assessments });
+        return { ...saved, patients, assessments };
+      }
     } catch (_) { /* Start with fictional sample data if local storage is unavailable or invalid. */ }
     const fresh = makeDemoData();
     saveData(fresh);

@@ -99,6 +99,8 @@ Any example records must be synthetic and visibly labeled as demo data. For exam
 
 These names and identifiers are fictional placeholders, not patient records.
 
+The demo ward starts with 20 fabricated patients. The 15 additional entries use numbered “Demo Patient” names and DEMO HNs. Their varied risk-factor combinations are randomized once when seeded, calculated by the rule above, and stored in the browser for demonstration.
+
 ## Questions for the nurses
 
 1. **Care steps:** What exact approved set of care-step checkboxes should replace the clearly labeled examples? Are there any steps that are conditional on a patient's risks?
